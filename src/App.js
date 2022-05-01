@@ -8,7 +8,7 @@ import CreateProduct from "./pages/CreateProduct";
 
 function App() {
   return (
-    <div className="h-full bg-gray-100">
+    <div className="h-full bg-white">
       <BrowserRouter>
         <NavBar />
         <Routes>

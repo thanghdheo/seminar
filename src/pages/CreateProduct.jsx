@@ -59,7 +59,7 @@ function CreateProduct() {
       .create(doc)
       .then((res) => {
         swal("Thông báo", "Thêm thành công", "success");
-        navigate('/products')
+        navigate('/')
       })
       .catch(() => {
         swal("Thông báo", "Thêm thất bại", "error");
