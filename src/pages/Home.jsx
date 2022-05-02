@@ -10,6 +10,11 @@ import { CSVLink } from "react-csv";
 import { Tab } from "../components/Tab";
 import { getProducts } from "../APIs/Products";
 import Products from "./Products";
+import DatePicker from "react-datepicker";
+import { Input } from "../shared/ui";
+import moment from "moment";
+import swal from "sweetalert";
+import { map } from "lodash";
 
 const filter = [
   { id: 1, name: "Giá: Tăng dần" },
@@ -24,10 +29,16 @@ function classNames(...classes) {
 
 function Home() {
   const [query, setQuery] = useState("");
+  const [exports, setExports] = useState([]);
   const [selectedPerson, setSelectedPerson] = useState(filter[0]);
   const [tabs, setTabs] = useState([]);
   const [value, setValue] = useState();
   const [currentTab, setCurrentTab] = useState(1);
+  const [search, setSearch] = useState("");
+  const [date, setDate] = useState({
+    startDate: new Date(),
+    endDate: new Date(),
+  });
   const [array, setArray] = useState({
     products: [],
     mapping: [],
@@ -53,8 +64,6 @@ function Home() {
     );
   }, [selectedPerson]);
 
-  console.log(currentTab);
-
   const filteredfilter =
     query === ""
       ? filter
@@ -65,14 +74,7 @@ function Home() {
   const [loading, setLoading] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [perPage, setPerPage] = useState(5);
-  const title = [
-    "RFID",
-    "Tên sản phẩm",
-    "Barcode",
-    "Mô tả",
-    "Loại sản phẩm",
-    "Giá",
-  ];
+  const title = ["Barcode RFID", "RFID", "Tên sản phẩm", "Barcode", "Nhà kho"];
 
   useEffect(() => {
     setTabs([
@@ -88,8 +90,6 @@ function Home() {
       },
     ]);
   }, [array]);
-
-  console.log(array);
 
   useEffect(() => {
     setLoading(true);
@@ -116,9 +116,54 @@ function Home() {
           );
         }
       });
-      setMapping(resArr);
+
+      const check = resArr.filter((item) => {
+        if (
+          moment(item._createdAt).toDate() >=
+            moment(date.startDate, "DD/MM/YYYY hh:mm").toDate() &&
+          moment(item._createdAt).toDate() <=
+            moment(date.endDate, "DD/MM/YYYY hh:mm").toDate()
+        )
+          return item;
+      });
+
+      console.log(check);
+
+      if (check.length === 0) {
+        setMapping(resArr);
+      } else {
+        setMapping(check);
+      }
+
+      setExports(
+        resArr.filter((item) => {
+          if (
+            moment(item._createdAt).toDate() >=
+              moment(date.startDate, "DD/MM/YYYY hh:mm").toDate() &&
+            moment(item._createdAt).toDate() <=
+              moment(date.endDate, "DD/MM/YYYY hh:mm").toDate()
+          )
+            return item;
+        })
+      );
+      !search
+        ? setMapping(resArr)
+        : setMapping(
+            resArr.filter(
+              (item) =>
+                item.code_product.name
+                  .toLowerCase()
+                  .includes(search.toLowerCase()) ||
+                item.code_product.barcode.current
+                  .toLowerCase()
+                  .includes(search.toLowerCase())
+            )
+          );
     });
-  }, [value]);
+  }, [value, search, date]);
+
+  useEffect(() => {}, [date]);
+
   const indexOfLastPost = currentPage * perPage;
   const indexOfFirstPost = indexOfLastPost - perPage;
   const currentPost = mapping.slice(indexOfFirstPost, indexOfLastPost);
@@ -155,14 +200,40 @@ function Home() {
                     Danh sách sản phẩm mapping
                   </h1>
                 </div>
-                <div className="mt-4 sm:mt-0 sm:ml-16 sm:flex-none">
+                <div className="mt-4 sm:mt-0 sm:ml-16 flex items-center gap-x-2 ">
+                  <DatePicker
+                    className="rounded-lg h-11 border border-gray-300 font-light text-sm focus:ring-red-500 focus:border-0"
+                    dateFormat="dd/MM/yyyy hh:mm aa"
+                    showTimeSelect
+                    placeholderText="Vui lòng chọn ngày"
+                    selected={date.startDate}
+                    onChange={(date) => {
+                      setDate((prev) => ({
+                        ...prev,
+                        startDate: date,
+                      }));
+                    }}
+                  />
+                  <DatePicker
+                    className="rounded-lg h-11  border border-gray-300 font-light text-sm focus:ring-red-500 focus:border-0"
+                    dateFormat="dd/MM/yyyy hh:mm aa"
+                    showTimeSelect
+                    placeholderText="Vui lòng chọn ngày"
+                    selected={date.endDate}
+                    onChange={(date) => {
+                      setDate((prev) => ({
+                        ...prev,
+                        endDate: date,
+                      }));
+                    }}
+                  />
                   <button
                     // onClick={(e) => exportToCSV(mapping, "Mapping")}
                     type="button"
-                    className="inline-flex items-center justify-center rounded-md border border-transparent bg-red-500 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 sm:w-auto"
+                    className="inline-flex h-11 items-center justify-center rounded-md border border-transparent bg-red-500 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 sm:w-auto"
                   >
                     <CSVLink
-                      data={mapping.map((item) => ({
+                      data={exports.map((item) => ({
                         ID: item._id,
                         UPDATE_DATE: item._updatedAt,
                         ID_PRODUCT: item.code_product._id,
@@ -174,13 +245,13 @@ function Home() {
                       }))}
                       filename={"Mapping"}
                     >
-                      Export sản phẩm mapping
+                      Export
                     </CSVLink>
                   </button>
                 </div>
               </div>
-              <div className="sm:flex sm:items-center">
-                <div className="sm:flex-auto font-semibold pt-12">
+              <div className="sm:flex justify-between sm:items-center">
+                <div className=" font-semibold pt-12">
                   Sắp xếp
                   <div className="max-w-sm">
                     <Combobox
@@ -250,6 +321,15 @@ function Home() {
                         )}
                       </div>
                     </Combobox>
+                  </div>
+                </div>
+                <div className=" font-semibold pt-12">
+                  Lọc
+                  <div className="flex justify-center items-start gap-x-2">
+                    <Input
+                      placeholder="Tìm kiếm....."
+                      onChange={(e) => setSearch(e.target.value)}
+                    />
                   </div>
                 </div>
               </div>

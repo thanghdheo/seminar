@@ -46,6 +46,11 @@ function CreateProduct() {
       price: data.price * 1,
       quantity: data.quantity * 1,
       description: data.description,
+      barcode: {
+        _type: "slug",
+        current:
+         ( Math.floor(Math.random() * (9999999999999 - 1000000000000)) + 1000000000000).toString(),
+      },
       categoryProduct: {
         _ref: data.category,
       },
@@ -59,7 +64,7 @@ function CreateProduct() {
       .create(doc)
       .then((res) => {
         swal("Thông báo", "Thêm thành công", "success");
-        navigate('/')
+        navigate("/");
       })
       .catch(() => {
         swal("Thông báo", "Thêm thất bại", "error");

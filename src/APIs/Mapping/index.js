@@ -5,14 +5,12 @@ export const getMapping = async () => {
     `*[_type == "mapping"]{
         _id,
         _updatedAt,
+        _createdAt,
+        rfid,
         code_product -> {
             _id,
             barcode{
                 current
-            },
-            categoryProduct -> {
-                _id,
-                name
             },
             description,
             name,
@@ -24,6 +22,9 @@ export const getMapping = async () => {
                 }
             },
             
+        },
+        warehouse -> {
+            name
         }
     }`,
     {}

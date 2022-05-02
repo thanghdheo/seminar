@@ -53,6 +53,11 @@ function Table({ title, values, type }) {
                         </div>
                       </td>
                       <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
+                        <div className="font-medium text-gray-900 text-ellipsis overflow-hidden w-[150px]">
+                          {item.rfid}
+                        </div>
+                      </td>
+                      <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
                         <div className="font-medium text-gray-900">
                           {item.code_product.name}
                         </div>
@@ -63,19 +68,9 @@ function Table({ title, values, type }) {
                           {item.code_product.barcode.current}
                         </div>
                       </td>
-                      <td className=" whitespace-nowrap px-3 py-4 text-sm text-gray-500 break-normal">
-                        <div className="font-medium text-gray-900 text-ellipsis overflow-hidden w-[150px]">
-                          {item.code_product.description}
-                        </div>
-                      </td>
                       <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
                         <div className="font-medium text-gray-900">
-                          {item.code_product.categoryProduct?.name}
-                        </div>
-                      </td>
-                      <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
-                        <div className="font-medium text-gray-900">
-                          {format(item.code_product.price)}
+                          {format(item.warehouse.name)}
                         </div>
                       </td>
                     </tr>

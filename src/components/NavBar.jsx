@@ -32,7 +32,7 @@ function NavBar() {
             <h1 className="text-[45px] w-full flex justify-center items-center font-semibold text-style">RFID</h1>
           </div>
           <div className="mt-5 flex-grow flex flex-col">
-            <nav className="flex-1 px-2 pb-4 space-y-1">
+            {/* <nav className="flex-1 px-2 pb-4 space-y-1">
               {navigation.map((item) => (
                 <Link
                   key={item.name}
@@ -56,7 +56,7 @@ function NavBar() {
                   {item.name}
                 </Link>
               ))}
-            </nav>
+            </nav> */}
           </div>
         </div>
       </div>
