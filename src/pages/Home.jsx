@@ -117,35 +117,6 @@ function Home() {
         }
       });
 
-      const check = resArr.filter((item) => {
-        if (
-          moment(item._createdAt).toDate() >=
-            moment(date.startDate, "DD/MM/YYYY hh:mm").toDate() &&
-          moment(item._createdAt).toDate() <=
-            moment(date.endDate, "DD/MM/YYYY hh:mm").toDate()
-        )
-          return item;
-      });
-
-      console.log(check);
-
-      if (check.length === 0) {
-        setMapping(resArr);
-      } else {
-        setMapping(check);
-      }
-
-      setExports(
-        resArr.filter((item) => {
-          if (
-            moment(item._createdAt).toDate() >=
-              moment(date.startDate, "DD/MM/YYYY hh:mm").toDate() &&
-            moment(item._createdAt).toDate() <=
-              moment(date.endDate, "DD/MM/YYYY hh:mm").toDate()
-          )
-            return item;
-        })
-      );
       !search
         ? setMapping(resArr)
         : setMapping(
@@ -160,9 +131,32 @@ function Home() {
             )
           );
     });
-  }, [value, search, date]);
+  }, [value, search]);
 
-  useEffect(() => {}, [date]);
+  useEffect(() => {
+    setLoading(true);
+    getMapping().then((res) => {
+      setLoading(false);
+      const tmp = res;
+      const check = tmp.filter((item) => {
+        if (
+          moment(item._createdAt).toDate() >=
+            moment(date.startDate, "DD/MM/YYYY hh:mm").toDate() &&
+          moment(item._createdAt).toDate() <=
+            moment(date.endDate, "DD/MM/YYYY hh:mm").toDate()
+        )
+          return item;
+      });
+
+      if (!check.length) {
+        setMapping(res);
+      } else {
+        setMapping(check);
+      }
+
+      setExports(check);
+    });
+  }, [date]);
 
   const indexOfLastPost = currentPage * perPage;
   const indexOfFirstPost = indexOfLastPost - perPage;

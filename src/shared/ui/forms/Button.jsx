@@ -35,7 +35,7 @@ const Button = ({ size, color, children, fullWidth, ...rest }) => {
   const getColor = color => {
     switch (color) {
       case colors.red:
-        return "text-white bg-radical-red-500 hover:bg-radical-red-600 focus:ring-radical-red-500";
+        return "text-white bg-radical-red-600 hover:bg-green-500 focus:ring-radical-red-500";
       case colors.pink:
         return "text-radical-red-600 bg-radical-red-100 hover:bg-radical-red-200 focus:ring-radical-red-500";
       case colors.white:
