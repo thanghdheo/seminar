@@ -9,6 +9,10 @@ export const getMapping = async () => {
         rfid,
         code_product -> {
             _id,
+            categoryProduct -> {
+                _id,
+                name
+            },
             barcode{
                 current
             },

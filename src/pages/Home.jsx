@@ -30,6 +30,7 @@ function classNames(...classes) {
 function Home() {
   const [query, setQuery] = useState("");
   const [exports, setExports] = useState([]);
+  const [exportsAll, setExportsAll] = useState([]);
   const [selectedPerson, setSelectedPerson] = useState(filter[0]);
   const [tabs, setTabs] = useState([]);
   const [value, setValue] = useState();
@@ -43,7 +44,6 @@ function Home() {
     products: [],
     mapping: [],
   });
-
   useEffect(() => {
     setValue(selectedPerson);
     getMapping().then((res) =>
@@ -75,7 +75,7 @@ function Home() {
   const [currentPage, setCurrentPage] = useState(1);
   const [perPage, setPerPage] = useState(5);
   const title = ["Barcode RFID", "RFID", "Tên sản phẩm", "Barcode", "Nhà kho"];
-
+  console.log(exports);
   useEffect(() => {
     setTabs([
       {
@@ -134,6 +134,10 @@ function Home() {
   }, [value, search]);
 
   useEffect(() => {
+    getMapping().then((res) => setExportsAll(res));
+  }, []);
+
+  useEffect(() => {
     setLoading(true);
     getMapping().then((res) => {
       setLoading(false);
@@ -147,6 +151,8 @@ function Home() {
         )
           return item;
       });
+
+      console.log("check :", check);
 
       if (!check.length) {
         setMapping(res);
@@ -240,6 +246,27 @@ function Home() {
                       filename={"Mapping"}
                     >
                       Export
+                    </CSVLink>
+                  </button>
+                  <button
+                    // onClick={(e) => exportToCSV(mapping, "Mapping")}
+                    type="button"
+                    className="inline-flex h-11 items-center justify-center rounded-md border border-transparent bg-red-500 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 sm:w-auto"
+                  >
+                    <CSVLink
+                      data={exportsAll.map((item) => ({
+                        ID: item._id,
+                        UPDATE_DATE: item._updatedAt,
+                        ID_PRODUCT: item.code_product._id,
+                        NAME_PRODUCT: item.code_product.name,
+                        BARCODE: item.code_product.barcode.current,
+                        CATEGORY: item.code_product.categoryProduct?.name,
+                        DESCRIPTION: item.code_product.description,
+                        PRICE: item.code_product.price,
+                      }))}
+                      filename={"Mapping All"}
+                    >
+                      Export All
                     </CSVLink>
                   </button>
                 </div>
